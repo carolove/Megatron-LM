@@ -4,10 +4,10 @@
 
 export CUDA_DEVICE_MAX_CONNECTIONS=1
 
-CHECKPOINT_PATH=<Specify path>
-VOCAB_FILE=<Specify path to file>/gpt2-vocab.json
-MERGE_FILE=<Specify path to file>/gpt2-merges.txt
-DATA_PATH=<Specify path and file prefix>_text_document
+CHECKPOINT_PATH=/workspace/model/megatron-models/345m-1dp-out
+VOCAB_FILE=/workspace/model/gpt2-vocab/gpt2-vocab.json
+MERGE_FILE=/workspace/model/gpt2-vocab/gpt2-merges.txt
+DATA_PATH=/workspace/data/my-gpt2_text_document
 
 GPT_ARGS="
     --num-layers 24 \
@@ -38,7 +38,7 @@ DATA_ARGS="
 
 OUTPUT_ARGS="
     --log-interval 100 \
-    --save-interval 10000 \
+    --save-interval 1000 \
     --eval-interval 1000 \
     --eval-iters 10
 "
