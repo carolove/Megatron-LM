@@ -26,17 +26,30 @@ DISTRIBUTED_ARGS="
 "
 
 GPT_MODEL_ARGS="
-    --num-layers 12 \
+    --num-layers 24 \
     --hidden-size 1024 \
-    --num-attention-heads 8 \
+    --num-attention-heads 16 \
     --seq-length 1024 \
     --max-position-embeddings 1024 \
     --attention-softmax-in-fp32 
 "
+# 因为 tensor-model-parallel-size 1 pipeline-model-parallel-size 1 而且 GPUS_PER_NODE=4 
+# 评估出来的data parallel size 是 4
+# global-batch-size必须是 micro-batch-size * data parallel size 的整数倍
+
+#  --micro-batch-size 4 \ 
+#  --global-batch-size 32 \ 
+#  在core_r0.8.0 中这两个参数是 micro-batch-size 1 和 global-batch-size 1536 导致训练的step走的很慢
+#  需要研究下这两个参数的含义
+#  
+#  --rampup-batch-size 16 16 5859375 
+#  --adam-beta1 0.9 
+#  --adam-beta2 0.95 
+#  这三个参数我给删除了，需要研究一下这几个改动的参数对整个训练的影响
 
 TRAINING_ARGS="
     --micro-batch-size 4 \
-    --global-batch-size 8 \
+    --global-batch-size 32 \
     --train-iters 3000 \
     --weight-decay 0.1 \
     --init-method-std 0.006 \
@@ -48,10 +61,13 @@ TRAINING_ARGS="
     --lr-warmup-fraction .001 \
     --lr-decay-iters 430000 
 "
+# 不进行模型并行
+# 这里使用的是 1dp 1pp 4gpus 
 
+#  这两个参数在训练的时候感觉速度也不快，需要研究下
 MODEL_PARALLEL_ARGS="
-	--tensor-model-parallel-size 1 \
-	--pipeline-model-parallel-size 4 
+        --tensor-model-parallel-size 1 \
+        --pipeline-model-parallel-size 1 
 "
 
 DATA_ARGS="
